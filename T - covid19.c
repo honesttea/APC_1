@@ -60,7 +60,7 @@ int random50(int semente, int multiplicador, int entrada){
     }
     else{
         return 0;
-    };
+    }
 }
 
 //90%, check da morte.
@@ -71,7 +71,7 @@ int random90(int semente, int multiplicador, int entrada){
     }
     else{
         return 0;
-    };
+    }
 }
 
 
