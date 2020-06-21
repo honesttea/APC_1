@@ -63,17 +63,6 @@ int random20(int entrada){
     }
 }
 
-int random25(){
-    srand(time(0));
-    int conta = rand()%100;
-    if(conta < 25){
-        return 1;
-    }
-    else{
-        return 0;
-    }
-}
-
 int random75(){
     int conta = rand()%100;
     if(conta >= 75){
