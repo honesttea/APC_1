@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
-
+#include <stdlib.h>
+#include <time.h>
 /*
 
 ####### Objetivos ##########
@@ -38,24 +39,34 @@ Infectado sem isolamento = 'T'
 */
 
 
-//Randomizadores
-
-//20%, check da movimentacao, isolamento social maximo.
-int random20(int semente, int multiplicador, int entrada){
-    int conta = ((multiplicador*semente)* semente + entrada) % 100;
-    if(conta>=20){
-        
-        return 0;
+int random20(int entrada){
+    srand(time(0));
+    int conta = rand()%100;
+    if(entrada==1){
+        if(conta > 20){
+            return 0;
+        }
+        else{
+            return 1;
+        }
+    }
+    if(entrada==2){
+      if(conta > 50){
+            return 0;
+        }
+        else{
+            return 1;
+        }  
     }
     else{
         return 1;
     }
 }
 
-//50%, check da movimentacao, isolamento social parcial.
-int random50(int semente, int multiplicador, int entrada){
-    int conta = ((multiplicador*semente) * semente + entrada) % 100;
-    if(conta>=50){
+int random25(){
+    srand(time(0));
+    int conta = rand()%100;
+    if(conta < 25){
         return 1;
     }
     else{
@@ -63,10 +74,25 @@ int random50(int semente, int multiplicador, int entrada){
     }
 }
 
-//90%, check da morte.
-int random90(int semente, int multiplicador, int entrada){
-    int conta = ((multiplicador*semente) * semente + entrada) % 100;
-    if(conta>=90){
+int random75(){
+    int conta = rand()%100;
+    if(conta >= 75){
+        return 0;
+    }
+    if(conta >= 50 && conta < 75){
+        return 1;
+    }
+    if(conta >= 25 && conta < 50){
+        return 2;
+    }
+    else{
+        return 3;    
+    }
+}
+
+int random90(){
+    int conta = rand()%100;
+    if(conta > 90){
         return 1;
     }
     else{
@@ -74,115 +100,161 @@ int random90(int semente, int multiplicador, int entrada){
     }
 }
 
-
-//Funcao Principal
-int main(){
-    int entrada;
-    char demografico[100][100];
+int main(int argc, char const *argv[]){
+    int demografico[100][100];
     int contas=0;
+    int checagem=0;
     int mortos=0;
     int infectados=0;
-    scanf("Coloque qualquer numero(de 1 a 30.000):%d", &entrada);
+    int rand1=0;
+    int rand2=0;
+    int infectados_j=0;
+    int infectados_i=0;
+    int j=0;
+    int i=0;
+    int cenario=0;
+    int numero_infectados=0;
+    int contagem;
+    srand(time(0));
 
-    //Colocar as pessoas na matriz
-    for(int i=0; i<100; i++){
-        if(contas<500){
-            for(int j=0; j<100; j++){
-                if (random50(i,entrada,j)!=1){
-                    demografico[i][j] = ' ';
-                    entrada++;
-                }
-                else{
-                    demografico[i][j] = 'S';
+    printf("Cenario('1' isolamento social total;'2' isolamento social parcial;'3' sem isolamento social):");
+    scanf("%d", &cenario);
+    
+    for(int i = 0; i<100; i++){
+        for(int j=0; j<100 ;j++){
+            demografico[i][j] = -2;
+        }
+    }
+ 
+    for(;contas<5000;){
+        for(int i = 0; i < 100; i++){
+            for(int j = 0; j < 100 && contas<5000; j++){
+                if(rand()%100<20){
+                    demografico[i][j] = -1;
                     contas++;
                 }
             }
         }
     }
-
-
-    //Colocar os doentes.
-    for(int i = 0;i<100 && contas<5;i=i+20){
-        for(int j=0;j<100;j=j+20){
-            demografico[i][j] = 'I';
-            contas++;
+    
+    while(numero_infectados<5){
+        rand1=rand()%100;
+        rand2=rand()%100;
+        if(demografico[rand1][rand2]==-1){
+            demografico[rand1][rand2]=0;
+            numero_infectados++;
         }
     }
 
-    for(int i=0;i<3600;i+=2){
-        
-        //Infeccao
-        for(int i;i<100;i++){
-            for(int j;j<100;j++){ 
-                if(demografico[i][j]=='I'){
-                    //Cima
-                    if(demografico[i+1][j] == 'S' && i<100){
-                        demografico[i+1][j]='I';
-                    }
-                    if( demografico[i+2][j]=='S' && i<100){
-                        demografico[i+2][j]='I';
-                    }
-                    if(demografico[i+3][j] == 'S' && i<100){
-                        demografico[i+3][j]='I';
-                    }
-                    //Baixo
-                    if(demografico[i-1][j] == 'S' && i>0){
-                        demografico[i-1][j]='I';
-                    }
-                    if( demografico[i-2][j]=='S' && i>0){
-                        demografico[i-2][j]='I';
-                    }
-                    if(demografico[i-3][j] == 'S' && i>0){
-                        demografico[i-3][j]='I';
-                    }
-                    //Direita
-                    if(demografico[i][j+1]){
-                        demografico[i][j+1]='I';
-                    }
-                    if(demografico[i][j+2]){
-                        demografico[i][j+2]='I';
-                    }
-                    if(demografico[i][j+3]){
-                        demografico[i][j+3]='I';
-                    }
-                    //Esquerda
-                    if(demografico[i][j-1]){
-                        demografico[i][j-1]='I';
-                    }
-                    if(demografico[i][j-2]){
-                        demografico[i][j-2]='I';
-                    }
-                    if(demografico[i][j-3]){
-                        demografico[i][j-3]='I';
-                    }
+    for(int contador = 0; contador < 3600 ; contador+=2){
+        infectados=0;
+
+        for(int i = 0; i < 100; i++){
+            for(int j = 0; j < 100; j++){
+                if(random20(cenario)==1 && demografico[i][j]<60){
+                    if (demografico[i+1][j] == -2 || demografico[i-1][j] == -2 || demografico[i][j+1] == -2 || demografico[i][j-1] == -2){
+                        checagem=0;
+                        while (checagem != 1){
+                            if(random75() == 0 && demografico[i][j-1] == -2){
+                                demografico[i][j-1] = demografico[i][j];
+                                demografico[i][j] = -2 ;
+                                checagem = 1;
+                            }
+                            else if(random75() == 1 && demografico[i-1][j] == -2){
+                                demografico[i-1][j] = demografico[i][j];
+                                demografico[i][j] = -2 ;
+                                checagem = 1;
+                            }
+                            else if(random75() == 2 && demografico[i][j+1] == -2){
+                                demografico[i][j+1] = demografico[i][j];
+                                demografico[i][j] = -2 ;
+                                checagem = 1;
+                            }
+                            else if(random75() == 3 && demografico[i+1][j] == -2){
+                                demografico[i+1][j] = demografico[i][j];
+                                demografico[i][j] = -2 ;
+                                checagem = 1;
+                            }
+                        }
                     }
                 }
             }
-
-        //Loop pra tirar os mortos da funcao e contar a quantidade de mortos.
-        for(int i=0;i<100;i++){
-            for(int j;j<100;j++){
-                if(demografico[i][j]=='M'){
-                    demografico[i][j]=' ';
-                    mortos++;
+        }
+        
+        for(int i = 0;i < 100;i++){
+            for(int j=0;j < 100;j++){
+                if(demografico[i][j] == 96){
+                    if(random90()==1){
+                        demografico[i][j]= -2;
+                        mortos++;
+                    }else{
+                        demografico[i][j]+=1;
+                    }
                 }
-
             }
         }
 
-        //Loop pra contar quantos infectados tem.
-        for(int i;i<100;i++){
-            for(int j; j<100; j++){
-                if(demografico[i][j]=='I'){
+        for(int i=0;i < 100;i++){
+            for(int j=0; j < 100; j++){
+                if(demografico[i][j] > -1 && demografico[i][j] <= 96){
                     infectados++;
                 }
             }
         }
+
+        for(int i=0;i < 100;i++){
+            for(int j=0; j < 100; j++){
+                if(demografico[i][j] > -1){
+                    demografico[i][j] += 2;
+                }
+            }
+        }
+
+        printf("Infectadas:%d Mortas:%d\n", infectados, mortos);
         sleep(2);
-        printf("Infectadas:%d Mortas:%d", infectados,mortos);
+
+        for(int i=0;i < 100;i++){
+            for(int j=0;j < 100;j++){ 
+                if(demografico[i][j]>-1){
+                    if(demografico[i+1][j] == -1 && i < 100 &&rand()%100>75){
+                        demografico[i+1][j]=0;
+                    }
+                    if( demografico[i+2][j]==-1 && i < 100&&rand()%100>75){
+                        demografico[i+2][j]=0;
+                    }
+                    if(demografico[i+3][j] == -1 && i < 100&&rand()%100>75){
+                        demografico[i+3][j]=0;
+                    }
+                    if(demografico[i-1][j] == -1 && i>0&&rand()%100>75){
+                        demografico[i-1][j]=0;
+                    }
+                    if( demografico[i-2][j]==-1 && i>0&&rand()%100>75){
+                        demografico[i-2][j]=0;
+                    }
+                    if(demografico[i-3][j] == -1 && i>0&&rand()%100>75){
+                        demografico[i-3][j]=0;
+                    }
+                    if(demografico[i][j+1] == -1 && j < 100&&rand()%100>75){
+                        demografico[i][j+1]=0;
+                    }
+                    if(demografico[i][j+2] == -1 && j < 100&&rand()%100>75){
+                        demografico[i][j+2]=0;
+                    }
+                    if(demografico[i][j+3] == -1 && j < 100&&rand()%100>75){
+                        demografico[i][j+3]=0;
+                    }
+                    if(demografico[i][j-1] == -1 && j>0&&rand()%100>75){
+                        demografico[i][j-1]=0;
+                    }
+                    if(demografico[i][j-2] == -1 && j>0&&rand()%100>75){
+                        demografico[i][j-2]=0;
+                    }
+                    if(demografico[i][j-3] == -1 && j>0&&rand()%100>75){
+                        demografico[i][j-3]=0;
+                    }
+                }
+            }
+        }
     }
-        
-        
-        
-    return 0;
+    return 0;             
 }
